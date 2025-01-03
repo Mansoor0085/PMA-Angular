@@ -1,0 +1,126 @@
+<div class="bg-secondary text-center my-4">
+  <h2 class="text-center py-4">Products Management Application</h2>
+</div>
+<div class="container mt-4">
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-primary" (click)="openModal('add')">Add New</button>
+  </div>
+
+  <!-- Product Table -->
+  <table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (product of products; track product.id){
+      <tr >
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm" (click)="openModal('edit', product)">Edit</button>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-sm" (click)="deleteProduct(product.id)">Delete</button>
+        </td>
+      </tr>
+    }
+      <tr *ngIf="products.length === 0">
+        <td colspan="6" class="text-center">No products available</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Loading Template -->
+  <ng-template #loading>
+    <p class="text-center">Loading products...</p>
+  </ng-template>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="productModal" #productModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Product</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="container">
+          <form #productForm="ngForm" (ngSubmit)="saveProduct()">
+            <div class="row">
+              <div class="col-12">
+                <label for="name">Name:</label>
+                <input id="name" [(ngModel)]="product.name" name="name" class="form-control" required />
+                @if (productForm.submitted && productForm.controls['name']?.errors) {
+                  <div class="invalid-feedback d-block mt-1">
+                    @if (productForm.controls['name']?.errors?.['required']) {
+                      <small>Name is required.</small>
+                    }
+                    @if (productForm.controls['name']?.errors?.['minlength']) {
+                      <small>Name must be at least 3 characters long.</small>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <label for="price">Price:</label>
+                <input id="price" [(ngModel)]="product.price" name="price" type="number" class="form-control" required min="1"/>
+                @if (productForm.submitted && productForm.controls['price']?.errors) {
+                  <div class="invalid-feedback d-block mt-1">
+                    @if (productForm.controls['price']?.errors?.['required']) {
+                      <small>Price is required.</small>
+                    }
+                    @if (productForm.controls['price']?.errors?.['min']) {
+                      <small>Price must be greater than 0.</small>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <label for="quantity">Quantity:</label>
+                <input id="quantity" [(ngModel)]="product.quantity" name="quantity" type="number" class="form-control" required min="0"/>
+                @if (productForm.submitted && productForm.controls['quantity']?.errors) {
+                  <div class="invalid-feedback d-block mt-1">
+                    @if (productForm.controls['quantity']?.errors?.['required']) {
+                      <small>Quantity is required.</small>
+                    }
+                    @if (productForm.controls['quantity']?.errors?.['min']) {
+                      <small>Quantity must be greater than 0.</small>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" [disabled]="!productForm.form.valid">
+                  {{ isEdit ? 'Update' : 'Save' }}
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
